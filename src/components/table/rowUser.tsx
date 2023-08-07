@@ -6,10 +6,11 @@ import Tippy from "@tippyjs/react";
 import { SlPencil } from "react-icons/sl";
 import { MdDeleteForever } from "react-icons/md";
 
-// import FromCreateNewUser from "../form/createNewUser";
-// import FromDeleteUser from "../form/deleteUser";
+import FromCreateNewUser from "../form/createrUser";
+import FromDeleteUser from "../form/deleteUser";
 
 import "tippy.js/dist/tippy.css";
+
 interface IProps {
   setLoadApi?: any;
   loadApi?: boolean;
@@ -20,61 +21,74 @@ interface IProps {
 const TableRowUser: React.FC<IProps> = ({ data, setLoadApi, loadApi }) => {
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const [openEdit, setOpenEdit] = useState<boolean>(false);
+  const [roleUser, setRoleUser] = useState<any>([]);
+  const [email, setEmail] = useState<string>();
 
-  // useEffect(() => {
-  //   if (accessToken) {
-  //     const { id, email, firstName, lastName, role } = jwt(
-  //       accessToken
-  //     ) as ITokenData;
-  //     setcurrentUser({
-  //       email,
-  //       role,
-  //     });
-  //   }
-  // }, []);
+  useEffect(() => {
+    const user = getCookie("user") || "";
+    const userGmail = getCookie("emailUser") || "";
+    console.log(user?.split("/")?.[3] || "", "kha");
 
-  // const isEdit = useMemo(() => {
-  //   if (
-  //     (currentUser.role.includes("admin") && !data.role.includes("admin")) ||
-  //     data.email === currentUser.email
-  //   ) {
-  //     return true;
-  //   }
-  //   if (currentUser.role.includes("user")) {
-  //     return false;
-  //   }
-  //   return false;
-  // }, [data, currentUser]);
+    const superadmin = user?.split("/")?.[3]?.split(",")?.[0] || "";
+    const admin = user?.split("/")?.[3]?.split(",")?.[1] || "";
+    const User = user?.split("/")?.[3]?.split(",")?.[2] || "";
+    setEmail(userGmail);
+    setRoleUser([superadmin, admin, User]);
+  }, []);
 
-  // const isDeletes = useMemo(() => {
-  //   if (
-  //     (currentUser.role.includes("admin") && !data.role.includes("admin")) ||
-  //     (data.email === currentUser.email && currentUser.role.includes("admin"))
-  //   ) {
-  //     return true;
-  //   }
-  //   if (currentUser.role.includes("user")) {
-  //     return false;
-  //   }
-  //   return false;
-  // }, [data, currentUser]);
+  const isEdit = useMemo(() => {
+    if (
+      data.email === email ||
+      (roleUser?.includes("superadmin") && !data.role.includes("superadmin"))
+    ) {
+      return true;
+    }
+
+    if (
+      data.email === email ||
+      (roleUser?.includes("admin") && data.role.includes("user"))
+    ) {
+      return true;
+    }
+    return false;
+  }, [data, roleUser]);
+
+  const isDeletes = useMemo(() => {
+    if (
+      roleUser?.includes("superadmin") &&
+      !data.role.includes("superadmin") &&
+      data.email !== email
+    ) {
+      return true;
+    }
+    if (
+      roleUser?.includes("admin") &&
+      data.role.includes("user") &&
+      data.email !== email
+    ) {
+      return true;
+    }
+    return false;
+  }, [data, roleUser]);
 
   return (
     <div className="flex ">
-      <div className=" leading-[24px] h-[24px] flex">
-        <Tippy
-          arrow={false}
-          placement="bottom"
-          content={<p className="text-[13px] px-[5px]">Edit</p>}
-        >
-          <button
-            onClick={() => setOpenEdit(true)}
-            className="cursor-pointer  leading-[24px] w-[36px] h-[26px] px-[6px]  mr-[6.5px] text-green-1bc5bd"
+      {isEdit && (
+        <div className=" leading-[24px] h-[24px] flex">
+          <Tippy
+            arrow={false}
+            placement="bottom"
+            content={<p className="text-[13px] px-[5px]">Edit</p>}
           >
-            <SlPencil className="text-[24px] " />
-          </button>
-        </Tippy>
-        {/* <FromCreateNewUser
+            <button
+              onClick={() => setOpenEdit(true)}
+              className="cursor-pointer  leading-[24px] w-[36px] h-[26px] px-[6px]  mr-[6.5px] text-green-1bc5bd"
+            >
+              <SlPencil className="text-[24px] " />
+            </button>
+          </Tippy>
+          {openEdit && (
+            <FromCreateNewUser
               setLoadApi={setLoadApi}
               loadApi={loadApi}
               data={data}
@@ -82,32 +96,36 @@ const TableRowUser: React.FC<IProps> = ({ data, setLoadApi, loadApi }) => {
               openCreateNew={openEdit}
               setOpenCreateNew={setOpenEdit}
               title="Edit"
-            /> */}
-      </div>
+            />
+          )}
+        </div>
+      )}
 
-      <div>
-        <Tippy
-          arrow={false}
-          placement="bottom"
-          content={
-            <p className="text-[13px]  leading-[24px] px-[5px]">Delete</p>
-          }
-        >
-          <button
-            onClick={() => setOpenDelete(true)}
-            className="cursor-pointer  w-[36px] h-[26px] px-[6px]  mr-[6.5px] text-red-f64e60"
+      {isDeletes && (
+        <>
+          <Tippy
+            arrow={false}
+            placement="bottom"
+            content={
+              <p className="text-[13px]  leading-[24px] px-[5px]">Delete</p>
+            }
           >
-            <MdDeleteForever className="text-[30px] " />
-          </button>
-        </Tippy>
-        {/* <FromDeleteUser
+            <button
+              onClick={() => setOpenDelete(true)}
+              className="cursor-pointer  w-[36px] h-[26px] px-[6px]  mr-[6.5px] text-red-f64e60"
+            >
+              <MdDeleteForever className="text-[30px] " />
+            </button>
+          </Tippy>
+          <FromDeleteUser
             setLoadApi={setLoadApi}
             loadApi={loadApi}
             data={data}
             setOpenDelete={setOpenDelete}
             openDelete={openDelete}
-          /> */}
-      </div>
+          />
+        </>
+      )}
     </div>
   );
 };

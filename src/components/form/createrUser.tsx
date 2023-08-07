@@ -9,6 +9,8 @@ import { InputCheck } from "../inputs/InputCheck";
 import { Button } from "@mui/material";
 import { createUser } from "@/api/User/createUser";
 import { createNewUserSchema } from "../yup/createNewUserSchema";
+import { role } from "@/api/User/getAllUser";
+import { updateOneById } from "@/api/User/updateOneUser";
 
 interface IProps {
   setLoadApi?: any;
@@ -36,12 +38,16 @@ const FromCreateNewUser: React.FC<IProps> = ({
   },
 }) => {
   const [loading, setLoading] = useState(false);
-  const [role, setRole] = useState(false);
+  const [roleSuperAdmin, setRoleSuperAdmin] = useState(false);
+  const [roleAdmin, setRoleAdmin] = useState(false);
+  const [roleUser, setRoleUser] = useState(false);
   const [messageError, setMessageError] = useState("");
+  console.log(role.ADMIN);
+  console.log(roleSuperAdmin);
 
   useEffect(() => {
     const getUsers = async () => {
-      setRole(data.role?.includes("admin"));
+      // setRole(data.role?.includes("admin"));
       setFieldValue("lastName", data.lastName);
       setFieldValue("firstName", data.firstName);
       setFieldValue("email", data.email);
@@ -70,10 +76,19 @@ const FromCreateNewUser: React.FC<IProps> = ({
       setLoading(true);
       actions.resetForm();
       setMessageError("");
-      setRole(false);
+      // setRole(false);
+
       if (title === "Create new") {
         createUser({
           ...values,
+          role:
+            roleAdmin || roleSuperAdmin || roleUser
+              ? [
+                  true ? role.SUPERADMIN : "",
+                  false ? role.ADMIN : "",
+                  true ? role.USER : "",
+                ].filter((data) => data !== "")
+              : [role.USER],
         })
           .then(() => {
             console.log("ddungs");
@@ -86,20 +101,27 @@ const FromCreateNewUser: React.FC<IProps> = ({
           })
           .finally();
       }
-      // if (title === "Edit") {
-      //   updateOneById(data._id, {
-      //     ...values,
-      //     role: role ? [userRole.USER, userRole.ADMIN] : [userRole.USER],
-      //   })
-      //     .then(() => {
-      //       setLoadApi(!loadApi);
-      //       setOpenCreateNew(false);
-      //     })
-      //     .catch(({ status, message }) => {
-      //       setMessageError("Email already exist.");
-      //     })
-      //     .finally();
-      // }
+      if (title === "Edit") {
+        updateOneById(data._id, {
+          ...values,
+          role:
+            roleAdmin || roleSuperAdmin || roleUser
+              ? [
+                  true ? role.SUPERADMIN : "",
+                  false ? role.ADMIN : "",
+                  true ? role.USER : "",
+                ].filter((data) => data !== "")
+              : [role.USER],
+        })
+          .then(() => {
+            setLoadApi(!loadApi);
+            setOpenCreateNew(false);
+          })
+          .catch(({ status, message }) => {
+            setMessageError("Email already exist.");
+          })
+          .finally();
+      }
     },
   });
 
@@ -173,6 +195,42 @@ const FromCreateNewUser: React.FC<IProps> = ({
                 />
               </div>
             </div>
+            <div className="flex h-[19.5px]  justify-between  items-center  mt-[9.75px]">
+              <label className="text-[13px] text-black-3f4254 ">Role:</label>
+              <div className="w-[347px] flex items-center h-[19.5px] mb-0 mt-0 my-auto ">
+                <InputCheck
+                  classLabel="text-[13px] text-black-3f4254 font-normal cursor-pointer  ml-[9.75px]"
+                  value={roleSuperAdmin}
+                  onChange={() => {
+                    setRoleSuperAdmin(!roleSuperAdmin);
+                  }}
+                  id="superadmin"
+                  title="superadmin"
+                />
+                <div className="ml-[20px]">
+                  <InputCheck
+                    classLabel="text-[13px] text-black-3f4254 font-normal cursor-pointer  ml-[9.75px]"
+                    value={roleAdmin}
+                    onChange={() => {
+                      setRoleAdmin(!roleAdmin);
+                    }}
+                    id="admin"
+                    title="admin"
+                  />
+                </div>
+                <div className="ml-[20px]">
+                  <InputCheck
+                    classLabel="text-[13px] text-black-3f4254 font-normal cursor-pointer  ml-[9.75px]"
+                    value={roleUser}
+                    onChange={() => {
+                      setRoleUser(!roleUser);
+                    }}
+                    id="user"
+                    title="user"
+                  />
+                </div>
+              </div>
+            </div>
             <div className="flex  justify-between  items-center  mt-[9.75px]">
               <label className="text-[13px]  text-black-3f4254 ">
                 New Password:
@@ -215,7 +273,7 @@ const FromCreateNewUser: React.FC<IProps> = ({
           </div>
           <div className="flex justify-end items-center px-[19.5px] pb-[19.5px]">
             <Button variant="outlined" type="submit" color="success">
-              Create
+              {title === "Edit" ? "Update" : "Create"}
             </Button>
             <Button
               color="error"

@@ -21,8 +21,6 @@ const User = (props: Props) => {
   const [loadApi, setLoadApi] = useState(false);
   const [openCreateNew, setOpenCreateNew] = useState(false);
 
-  console.log(limit, page, "page");
-
   const fetchCurPage = async () => {
     setLoading(true);
     await getAllUser({ page, limit })
@@ -39,11 +37,12 @@ const User = (props: Props) => {
   useEffect(() => {
     fetchCurPage();
   }, [page, limit, loadApi]);
-  console.log(users);
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
+
+  console.log(users);
 
   return (
     <WrapperContent title="User">
@@ -80,7 +79,7 @@ const User = (props: Props) => {
               item.email,
               item.firstName,
               item.lastName,
-              <div className="d-flex justify-content-start">
+              <div key={index} className="d-flex justify-content-start">
                 <TableRowUser
                   setLoadApi={setLoadApi}
                   loadApi={loadApi}

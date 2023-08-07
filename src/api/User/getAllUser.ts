@@ -1,5 +1,11 @@
 import { request } from "../request";
 
+export enum role {
+  SUPERADMIN = "superadmin",
+  ADMIN = "admin",
+  USER = "user",
+}
+
 export const getAllUser = ({
   page,
   limit,
