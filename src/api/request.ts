@@ -12,8 +12,8 @@ export const request = axios.create({
 
 // Add a request interceptor
 request.interceptors.request.use(function (config) {
-  if (getCookie("emailUser")) {
-    config.headers.Authorization = `Bearer ${getCookie("emailUser")}`;
+  if (getCookie("accessToken")) {
+    config.headers.Authorization = `Bearer ${getCookie("accessToken")}`;
     return config;
   }
   return config;

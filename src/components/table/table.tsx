@@ -3,6 +3,7 @@ import React, { ReactNode, useEffect, useState } from "react";
 import "../styles/style.scss";
 
 import {
+  Button,
   CircularProgress,
   Table,
   TableBody,
@@ -88,6 +89,7 @@ const EnhancedTable: React.FC<ITableProps> = ({
 }) => {
   const [order, setOrder] = useState<TSortOrder>("asc");
   const [orderBy, setOrderBy] = useState<number>(-1);
+  const [show, setShow] = useState<boolean>(false);
 
   const handleRequestSort = (propertyIndex: number) => {
     const isDesc = orderBy === propertyIndex && order === "desc";
@@ -154,15 +156,37 @@ const EnhancedTable: React.FC<ITableProps> = ({
                     key={rowIndex}
                     className="odd:bg-table-dark !text-[13px] "
                   >
-                    {row.map((item: any, fieldIndex: number) => (
+                    {row.map((item: string, fieldIndex: number) => (
                       <TableCell
-                        className="!text-[13px]  font-family"
+                        className={`!text-[13px] break-all min-w-[200px] font-family ${
+                          item.length > 1000 ? "w-[5000px" : ""
+                        }`}
                         key={fieldIndex}
                         sx={{
                           border: "1px solid #e0e0e0",
                         }}
                       >
-                        {item}
+                        {item.length > 1000 ? (
+                          <div>
+                            <p>
+                              {!show ? (
+                                <div>{item.slice(0, 300)}...</div>
+                              ) : (
+                                item
+                              )}
+                            </p>
+                            <Button
+                              className="mt-[20px]"
+                              variant="outlined"
+                              color="success"
+                              onClick={() => setShow(!show)}
+                            >
+                              Show All
+                            </Button>
+                          </div>
+                        ) : (
+                          item
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>

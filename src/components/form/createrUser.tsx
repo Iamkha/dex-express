@@ -42,12 +42,9 @@ const FromCreateNewUser: React.FC<IProps> = ({
   const [roleAdmin, setRoleAdmin] = useState(false);
   const [roleUser, setRoleUser] = useState(false);
   const [messageError, setMessageError] = useState("");
-  console.log(role.ADMIN);
-  console.log(roleSuperAdmin);
 
   useEffect(() => {
     const getUsers = async () => {
-      // setRole(data.role?.includes("admin"));
       setFieldValue("lastName", data.lastName);
       setFieldValue("firstName", data.firstName);
       setFieldValue("email", data.email);
@@ -74,9 +71,7 @@ const FromCreateNewUser: React.FC<IProps> = ({
     validationSchema: createNewUserSchema,
     onSubmit: async (values: any, actions: any) => {
       setLoading(true);
-      actions.resetForm();
       setMessageError("");
-      // setRole(false);
 
       if (title === "Create new") {
         createUser({
@@ -84,15 +79,14 @@ const FromCreateNewUser: React.FC<IProps> = ({
           role:
             roleAdmin || roleSuperAdmin || roleUser
               ? [
-                  true ? role.SUPERADMIN : "",
-                  false ? role.ADMIN : "",
-                  true ? role.USER : "",
+                  roleSuperAdmin ? role.SUPERADMIN : "",
+                  roleAdmin ? role.ADMIN : "",
+                  roleUser ? role.USER : "",
                 ].filter((data) => data !== "")
               : [role.USER],
         })
           .then(() => {
-            console.log("ddungs");
-
+            actions.resetForm();
             setLoadApi(!loadApi);
             setOpenCreateNew(false);
           })
@@ -102,18 +96,28 @@ const FromCreateNewUser: React.FC<IProps> = ({
           .finally();
       }
       if (title === "Edit") {
+        console.log(
+          roleAdmin || roleSuperAdmin || roleUser
+            ? [
+                roleSuperAdmin ? role.SUPERADMIN : "",
+                roleAdmin ? role.ADMIN : "",
+                roleUser ? role.USER : "",
+              ].filter((data) => data !== "")
+            : [role.USER]
+        );
         updateOneById(data._id, {
           ...values,
           role:
             roleAdmin || roleSuperAdmin || roleUser
               ? [
-                  true ? role.SUPERADMIN : "",
-                  false ? role.ADMIN : "",
-                  true ? role.USER : "",
+                  roleSuperAdmin ? role.SUPERADMIN : "",
+                  roleAdmin ? role.ADMIN : "",
+                  roleUser ? role.USER : "",
                 ].filter((data) => data !== "")
               : [role.USER],
         })
           .then(() => {
+            actions.resetForm();
             setLoadApi(!loadApi);
             setOpenCreateNew(false);
           })

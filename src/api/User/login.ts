@@ -6,3 +6,13 @@ export function signIn(email: string, password: string) {
     password,
   });
 }
+
+export interface ITokenData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string[];
+  exp: number;
+  iat: number;
+  id: string;
+}

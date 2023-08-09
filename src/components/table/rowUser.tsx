@@ -46,7 +46,9 @@ const TableRowUser: React.FC<IProps> = ({ data, setLoadApi, loadApi }) => {
 
     if (
       data.email === email ||
-      (roleUser?.includes("admin") && data.role.includes("user"))
+      (roleUser?.includes("admin") &&
+        !data.role.includes("superadmin") &&
+        !data.role.includes("admin"))
     ) {
       return true;
     }
@@ -63,7 +65,8 @@ const TableRowUser: React.FC<IProps> = ({ data, setLoadApi, loadApi }) => {
     }
     if (
       roleUser?.includes("admin") &&
-      data.role.includes("user") &&
+      !data.role.includes("superadmin") &&
+      !data.role.includes("admin") &&
       data.email !== email
     ) {
       return true;

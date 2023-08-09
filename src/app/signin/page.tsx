@@ -3,13 +3,14 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import jwt from "jwt-decode";
 import { useFormik } from "formik";
 
 // import { loginSchema } from "@/components/yup/loginSchema";
 import { Input } from "@/components/inputs/Input";
 import { ErrorLogin } from "@/components/notification/ErrorsLogin";
 import { loginSchema } from "@/components/yup/loginSchema";
-import { signIn } from "@/api/User/login";
+import { ITokenData, signIn } from "@/api/User/login";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { setCookie } from "@/components/cookies";
 
@@ -29,10 +30,15 @@ const FormLogin = () => {
       setLoading(true);
       await signIn(values.email, values.password)
         .then(({ data }: any) => {
-          const { id, email, firstName, lastName, role } = data.user;
           router.push("/users");
-          setCookie("emailUser", data.user.email);
-          setCookie("user", `${email}/${firstName}/${lastName}/${role}`);
+          setCookie("accessToken", data.token);
+          if (data.token) {
+            const { id, email, firstName, lastName, role } = jwt(
+              data.token
+            ) as ITokenData;
+            setCookie("emailUser", email);
+            setCookie("user", `${email}/${firstName}/${lastName}/${role}`);
+          }
           setMessageError("");
           setLoading(false);
           actions.resetForm();

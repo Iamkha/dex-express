@@ -21,7 +21,7 @@ const WrapperContent: React.FC<IProps> = ({
   return (
     <div id="wrapper-content" className=" min-h-screen w-full">
       <div>
-        <div className="h-full relative overflow-auto font-family bg-gray-f3f6f9 flex">
+        <div className="h-full relative font-family bg-gray-f3f6f9 flex">
           <div className="relative z-10">
             <SizebarUser
               openSideBar={openSideBar}

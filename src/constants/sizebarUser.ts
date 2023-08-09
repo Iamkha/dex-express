@@ -6,7 +6,13 @@ export const dataSizebarUser = [
   {
     id: 1,
     title: "User",
-    link: "/user",
+    link: "/users",
     icon: RiUser3Fill,
+  },
+  {
+    id: 2,
+    title: "Companies",
+    link: "/companies",
+    icon: MdLayers,
   },
 ];
